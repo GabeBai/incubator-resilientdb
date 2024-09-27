@@ -69,7 +69,7 @@ deploy/script/generate_key.sh ${BAZEL_WORKSPACE_PATH} ${output_key_path} ${#ipli
 deploy/script/generate_config.sh ${BAZEL_WORKSPACE_PATH} ${output_key_path} ${output_cert_path} ${output_path} ${admin_key_path} ${deploy_iplist[@]}
 
 # build kv server
-bazel build ${server}
+bazel build ${server} --copt=-Wno-implicit-function-declaration
 
 if [ $? != 0 ]
 then
@@ -83,7 +83,7 @@ function run_cmd(){
   idx=1
   for ip in ${deploy_iplist[@]};
   do
-     ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@${ip} "cd ${main_folder}/$idx; $1" &
+     ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "cd ${main_folder}/$idx; $1" &
     ((count++))
     ((idx++))
   done
@@ -95,7 +95,7 @@ function run_cmd(){
 }
 
 function run_one_cmd(){
-  ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@${ip} "$1" 
+  ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "$1" 
 }
 
 idx=1
@@ -118,7 +118,7 @@ idx=1
 count=0
 for ip in ${deploy_iplist[@]};
 do
-  scp -i ${key} -r ${bin_path} ${output_path}/server.config ${output_path}/cert ubuntu@${ip}:/home/ubuntu/${main_folder}/$idx &
+  scp -i ${key} -r ${bin_path} ${output_path}/server.config ${output_path}/cert gabbai@${ip}:/users/gabbai/${main_folder}/$idx &
   ((count++))
   ((idx++))
 done
@@ -154,7 +154,7 @@ do
   resp=""
   while [ "$resp" = "" ]
   do
-    resp=`ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@${ip} "cd ${main_folder}/$idx; grep \"receive public size:${#iplist[@]}\" ${server_bin}.log"` 
+    resp=`ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "cd ${main_folder}/$idx; grep \"receive public size:${#iplist[@]}\" ${server_bin}.log"` 
     if [ "$resp" = "" ]; then
       sleep 1
     fi
