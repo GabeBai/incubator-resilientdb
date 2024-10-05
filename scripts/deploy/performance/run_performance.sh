@@ -32,7 +32,7 @@ echo "benchmark done"
 count=1
 for ip in ${iplist[@]};
 do
-`ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no ubuntu@${ip} "killall -9 ${server_bin}"` 
+`ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "killall -9 ${server_bin}"` 
 ((count++))
 done
 
