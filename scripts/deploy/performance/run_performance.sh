@@ -46,12 +46,12 @@ while [ $count -gt 0 ]; do
         count=`expr $count - 1`
 done
 
-
+idx = 1
 echo "getting results"
 for ip in ${iplist[@]};
 do
-  echo "scp -i ${key} gabbai@${ip}:/users/gabbai/${server_bin}.log ./${ip}_log"
-  `scp -i ${key} gabbai@${ip}:/users/gabbai/${server_bin}.log result_${ip}_log` 
+  echo "scp -i ${key} gabbai@${ip}:/users/gabbai/resilientdb_app/$idx/${server_bin}.log ./${ip}_log"
+  `scp -i ${key} gabbai@${ip}:/users/gabbai/resilientdb_app/$idx/${server_bin}.log result_${ip}_log` 
 done
 
 python3 performance/calculate_result.py `ls result_*_log` > results.log
