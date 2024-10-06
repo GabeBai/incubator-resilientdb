@@ -51,7 +51,7 @@ idx=1
 for ip in ${iplist[@]};
 do
   ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-    sudo perf script -i /users/gabbai/perf.data > /users/gabbai/out.perf;
+    sudo perf script git-i /users/gabbai/perf.data > /users/gabbai/out.perf;
     ./FlameGraph/stackcollapse-perf.pl /home/gabbai/out.perf > /users/gabbai/out.folded;
     ./FlameGraph/flamegraph.pl /users/gabbai/out.folded > /users/gabbai/flamegraph_${idx}.svg" &
   ((idx++))
