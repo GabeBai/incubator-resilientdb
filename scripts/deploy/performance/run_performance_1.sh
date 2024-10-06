@@ -50,10 +50,11 @@ echo "benchmark done"
 idx=1
 for ip in ${iplist[@]};
 do
-  ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-    sudo perf script git-i /users/gabbai/perf.data > /users/gabbai/out.perf;
-    ./FlameGraph/stackcollapse-perf.pl /home/gabbai/out.perf > /users/gabbai/out.folded;
-    ./FlameGraph/flamegraph.pl /users/gabbai/out.folded > /users/gabbai/flamegraph_${idx}.svg" &
+ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
+  rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg;
+  sudo perf script -i /users/gabbai/perf.data > /users/gabbai/out.perf;
+  ./FlameGraph/stackcollapse-perf.pl /users/gabbai/out.perf > /users/gabbai/out.folded;
+  ./FlameGraph/flamegraph.pl /users/gabbai/out.folded > /users/gabbai/flamegraph_${idx}.svg" &
   ((idx++))
 done
 
@@ -62,7 +63,7 @@ wait  # 等待火焰图生成完成
 echo "Fetching flamegraph data from each node"
 for ip in ${iplist[@]};
 do
-  scp -i ${key} gabbai@${ip}:/home/flamegraph_${ip}.svg ./
+  scp -i ${key} gabbai@${ip}:/gabbai/flamegraph_${ip}.svg ./
 done
 
 
