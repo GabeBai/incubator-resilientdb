@@ -42,12 +42,14 @@ echo "benchmark done"
 
 
 # 收集火焰图数据
+idx=1
 for ip in ${iplist[@]};
 do
   ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-    sudo perf script -i /home/gabbai/perf.data > /home/gabbai/out.perf;
-    ./FlameGraph/stackcollapse-perf.pl /home/gabbai/out.perf > /home/gabbai/out.folded;
-    ./FlameGraph/flamegraph.pl /home/gabbai/out.folded > /home/gabbai/flamegraph_${ip}.svg" &
+    sudo perf script -i /users/gabbai/perf.data > /users/gabbai/out.perf;
+    ./FlameGraph/stackcollapse-perf.pl /home/gabbai/out.perf > /users/gabbai/out.folded;
+    ./FlameGraph/flamegraph.pl /users/gabbai/out.folded > /users/gabbai/flamegraph_${idx}.svg" &
+  idx++
 done
 
 wait  # 等待火焰图生成完成
