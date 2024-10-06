@@ -28,6 +28,7 @@ do
     sudo apt-get update;
     sudo apt-get install -y linux-tools-common linux-tools-generic;
     git clone https://github.com/brendangregg/FlameGraph.git;
+    rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg;
     sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 120" &
 done
 
@@ -51,7 +52,6 @@ idx=1
 for ip in ${iplist[@]};
 do
 ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-  rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg;
   sudo perf script -i /users/gabbai/perf.data > /users/gabbai/out.perf;
   ./FlameGraph/stackcollapse-perf.pl /users/gabbai/out.perf > /users/gabbai/out.folded;
   ./FlameGraph/flamegraph.pl /users/gabbai/out.folded > /users/gabbai/flamegraph_${idx}.svg" &
@@ -60,10 +60,12 @@ done
 
 wait  # 等待火焰图生成完成
 
+idx=1
 echo "Fetching flamegraph data from each node"
 for ip in ${iplist[@]};
 do
-  scp -i ${key} gabbai@${ip}:/gabbai/flamegraph_${ip}.svg ./
+  scp -i ${key} gabbai@${ip}:/gabbai/flamegraph_${idx}.svg ./
+  ((idx++))
 done
 
 
