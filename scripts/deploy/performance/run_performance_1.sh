@@ -17,6 +17,10 @@
 # under the License.
 #
 
+./script/deploy.sh $1
+
+. ./script/load_config.sh $1
+
 # 安装 perf 和 FlameGraph 工具，开启性能监控
 for ip in ${iplist[@]};
 do
@@ -27,9 +31,10 @@ do
     sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 120" &
 done
 
-./script/deploy.sh $1
-
-. ./script/load_config.sh $1
+if [[ -z $server ]];
+then
+server=//service/kv:kv_service
+fi
 
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
@@ -49,7 +54,7 @@ do
     sudo perf script -i /users/gabbai/perf.data > /users/gabbai/out.perf;
     ./FlameGraph/stackcollapse-perf.pl /home/gabbai/out.perf > /users/gabbai/out.folded;
     ./FlameGraph/flamegraph.pl /users/gabbai/out.folded > /users/gabbai/flamegraph_${idx}.svg" &
-  idx++
+  ((idx++))
 done
 
 wait  # 等待火焰图生成完成
@@ -59,6 +64,8 @@ for ip in ${iplist[@]};
 do
   scp -i ${key} gabbai@${ip}:/home/flamegraph_${ip}.svg ./
 done
+
+
 
 
 count=1
@@ -73,15 +80,17 @@ while [ $count -gt 0 ]; do
         count=`expr $count - 1`
 done
 
+idx=1
 echo "getting results"
 for ip in ${iplist[@]};
 do
-  echo "scp -i ${key} gabbai@${ip}:/home/${server_bin}.log ./${ip}_log"
-  `scp -i ${key} gabbai@${ip}:/home/${server_bin}.log result_${ip}_log` 
+  echo "scp -i ${key} gabbai@${ip}:/users/gabbai/resilientdb_app/$idx/${server_bin}.log ./${ip}_log"
+  `scp -i ${key} gabbai@${ip}:/users/gabbai/resilientdb_app/$idx/${server_bin}.log result_${ip}_log` 
+  ((idx++))
 done
 
 python3 performance/calculate_result.py `ls result_*_log` > results.log
 
-rm -rf result_*_log
+# rm -rf result_*_log
 echo "save result to results.log"
 cat results.log
