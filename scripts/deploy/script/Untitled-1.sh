@@ -17,14 +17,19 @@
 # under the License.
 #
 
+# 安装 perf 和 FlameGraph 工具，开启性能监控
+for ip in ${iplist[@]};
+do
+  ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
+    sudo apt-get update;
+    sudo apt-get install -y linux-tools-common linux-tools-generic;
+    git clone https://github.com/brendangregg/FlameGraph.git;
+    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 120" &
+done
+
 ./script/deploy.sh $1
 
 . ./script/load_config.sh $1
-
-if [[ -z $server ]];
-then
-server=//service/kv:kv_service
-fi
 
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
@@ -34,6 +39,26 @@ bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.
 sleep 60
 
 echo "benchmark done"
+
+
+# 收集火焰图数据
+for ip in ${iplist[@]};
+do
+  ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
+    sudo perf script -i /home/gabbai/perf.data > /home/gabbai/out.perf;
+    ./FlameGraph/stackcollapse-perf.pl /home/gabbai/out.perf > /home/gabbai/out.folded;
+    ./FlameGraph/flamegraph.pl /home/gabbai/out.folded > /home/gabbai/flamegraph_${ip}.svg" &
+done
+
+wait  # 等待火焰图生成完成
+
+echo "Fetching flamegraph data from each node"
+for ip in ${iplist[@]};
+do
+  scp -i ${key} gabbai@${ip}:/home/flamegraph_${ip}.svg ./
+done
+
+
 count=1
 for ip in ${iplist[@]};
 do
@@ -46,13 +71,11 @@ while [ $count -gt 0 ]; do
         count=`expr $count - 1`
 done
 
-idx = 1
 echo "getting results"
 for ip in ${iplist[@]};
 do
-  echo "scp -i ${key} gabbai@${ip}:/users/gabbai/resilientdb_app/$idx/${server_bin}.log ./${ip}_log"
-  `scp -i ${key} gabbai@${ip}:/users/gabbai/resilientdb_app/$idx/${server_bin}.log result_${ip}_log` 
-  idx++
+  echo "scp -i ${key} gabbai@${ip}:/home/${server_bin}.log ./${ip}_log"
+  `scp -i ${key} gabbai@${ip}:/home/${server_bin}.log result_${ip}_log` 
 done
 
 python3 performance/calculate_result.py `ls result_*_log` > results.log
