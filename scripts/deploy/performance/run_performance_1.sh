@@ -29,7 +29,7 @@ do
     sudo apt-get install -y linux-tools-common linux-tools-generic;
     git clone https://github.com/brendangregg/FlameGraph.git;
     rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg;
-    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 120" &
+    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 300" &
 done
 
 if [[ -z $server ]];
@@ -40,6 +40,10 @@ fi
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
 
+bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
+bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
+bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
+bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
 bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
 
 sleep 60
