@@ -21,6 +21,11 @@
 
 . ./script/load_config.sh $1
 
+if [[ -z $server ]];
+then
+server=//service/kv:kv_service
+fi
+
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
 
