@@ -64,7 +64,7 @@ idx=1
 echo "Fetching flamegraph data from each node"
 for ip in ${iplist[@]};
 do
-  scp -i ${key} gabbai@${ip}:/gabbai/flamegraph_${idx}.svg ./
+  scp -i ${key} gabbai@${ip}:/users/gabbai/flamegraph_${idx}.svg ./
   ((idx++))
 done
 
