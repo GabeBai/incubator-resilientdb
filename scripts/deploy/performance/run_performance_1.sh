@@ -33,7 +33,7 @@ do
     rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg" &
 done
 
-$(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
+bazel build //benchmark/protocols/pbft:kv_service_tools
 
 if [[ -z $server ]];
 then
@@ -49,7 +49,7 @@ do
     sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
 done
 
-bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
+$(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
 
 sleep 60
 
