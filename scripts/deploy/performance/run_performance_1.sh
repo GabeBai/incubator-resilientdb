@@ -51,6 +51,8 @@ do
     sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
 done
 
+wait
+
 echo "test kv service"
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
