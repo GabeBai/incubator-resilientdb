@@ -33,8 +33,6 @@ do
     rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg" &
 done
 
-bazel build //benchmark/protocols/pbft:kv_service_tools
-
 if [[ -z $server ]];
 then
 server=//service/kv:kv_service
@@ -42,12 +40,14 @@ fi
 
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
-
+echo "start to collect"
 for ip in ${iplist[@]};
 do
   ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
+    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 120" &
 done
+
+echo "test kv service"
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
 
@@ -55,6 +55,7 @@ sleep 60
 
 echo "benchmark done"
 
+echo "collect data"
 
 # 收集火焰图数据
 idx=1
