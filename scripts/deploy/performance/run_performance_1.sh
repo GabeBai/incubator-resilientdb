@@ -48,14 +48,14 @@ echo "start to collect"
 for ip in ${iplist[@]};
 do
   ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 120" &
+    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
 done
 
 echo "test kv service"
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
 
-sleep 200
+sleep 60
 
 echo "benchmark done"
 
