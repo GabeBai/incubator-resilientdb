@@ -21,6 +21,8 @@
 
 . ./script/load_config.sh $1
 
+bazel build //benchmark/protocols/pbft:kv_service_tools
+
 # 安装 perf 和 FlameGraph 工具，开启性能监控
 for ip in ${iplist[@]};
 do
@@ -32,6 +34,8 @@ do
     sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
 done
 
+./bazel-bin/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
+
 if [[ -z $server ]];
 then
 server=//service/kv:kv_service
@@ -42,7 +46,7 @@ server_bin=${server_name}
 
 bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
 
-sleep 30
+sleep 60
 
 echo "benchmark done"
 
