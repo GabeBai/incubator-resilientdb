@@ -35,7 +35,6 @@ do
 done
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
- $PWD/config_out/client.config
 
 if [[ -z $server ]];
 then
