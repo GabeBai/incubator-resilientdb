@@ -53,7 +53,7 @@ echo "test kv service"
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
 
-sleep 120
+sleep 200
 
 echo "benchmark done"
 
