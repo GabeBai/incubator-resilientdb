@@ -33,6 +33,8 @@ do
     rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg" &
 done
 
+wait
+
 if [[ -z $server ]];
 then
 server=//service/kv:kv_service
