@@ -40,6 +40,8 @@ fi
 
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
+
+
 echo "start to collect"
 for ip in ${iplist[@]};
 do
@@ -51,7 +53,7 @@ echo "test kv service"
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
 
-sleep 60
+sleep 120
 
 echo "benchmark done"
 
