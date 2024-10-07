@@ -34,7 +34,8 @@ do
     sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
 done
 
-./bazel-bin/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
+$(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
+ $PWD/config_out/client.config
 
 if [[ -z $server ]];
 then
