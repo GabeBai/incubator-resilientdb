@@ -48,7 +48,7 @@ echo "start to collect"
 for ip in ${iplist[@]};
 do
   ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
-    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
+    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 80" &
 done
 
 wait
