@@ -30,8 +30,7 @@ do
     sudo apt-get update;
     sudo apt-get install -y linux-tools-common linux-tools-generic;
     git clone https://github.com/brendangregg/FlameGraph.git;
-    rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg;
-    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
+    rm -f /users/gabbai/perf.data /users/gabbai/out.perf /users/gabbai/out.folded /users/gabbai/*.svg" &
 done
 
 $(bazel info bazel-bin)/benchmark/protocols/pbft/kv_service_tools $PWD/config_out/client.config
@@ -43,6 +42,12 @@ fi
 
 server_name=`echo "$server" | awk -F':' '{print $NF}'`
 server_bin=${server_name}
+
+for ip in ${iplist[@]};
+do
+  ssh -i ${key} -n -o BatchMode=yes -o StrictHostKeyChecking=no gabbai@${ip} "
+    sudo perf record -F 99 -a -g -o /users/gabbai/perf.data -- sleep 60" &
+done
 
 bazel run //benchmark/protocols/pbft:kv_service_tools -- $PWD/config_out/client.config 
 
