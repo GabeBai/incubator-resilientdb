@@ -104,7 +104,7 @@ function run_one_cmd(){
 run_cmd "killall -9 ${server_bin}"
 if [ $performance ];
 then
-run_cmd "rm -rf /home/ubuntu/${main_folder}"
+run_cmd "rm -rf /users/gabbai/ubuntu/${main_folder}"
 fi
 
 idx=1
