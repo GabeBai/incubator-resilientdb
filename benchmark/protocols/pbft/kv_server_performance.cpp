@@ -26,6 +26,7 @@
 #include "platform/networkstrate/service_network.h"
 #include "platform/statistic/stats.h"
 #include "proto/kv/kv.pb.h"
+#include "CivetException.h"
 
 using namespace resdb;
 using namespace resdb::storage;
@@ -83,3 +84,4 @@ int main(int argc, char** argv) {
       return -1;
   }
 }
+
