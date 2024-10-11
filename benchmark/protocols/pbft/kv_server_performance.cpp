@@ -75,7 +75,11 @@ int main(int argc, char** argv) {
     return request_data;
   });
 
-  auto server =
-      std::make_unique<ServiceNetwork>(*config, std::move(performance_consens));
-  server->Run();
+  try {
+      auto server = std::make_unique<ServiceNetwork>(*config, std::move(performance_consens));
+      server->Run();
+  } catch (const CivetException& e) {
+      std::cerr << "CivetServer initialization failed: " << e.what() << std::endl;
+      return -1;
+  }
 }
